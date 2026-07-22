@@ -117,7 +117,7 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    if request.form.get('password') == 'admin123':
+    if request.form.get('password') == '"Mən hələ öz dərinliyimdə olan, məni kəşf edəcək o ağıllı adamı tapmamışam.!45"':
         session['logged_in'] = True
     return redirect(url_for('index'))
 
@@ -181,7 +181,6 @@ def download(filename):
     is_logged_in = session.get('logged_in', False)
 
     # Faylın gizli qovluqda olub- olmadığını yoxlayırıq
-    file_path_cat = files_db.get(filename, {}).get("path", "Ümumi")
     is_secret = False
     for p in all_paths_info:
         if p["path"] == file_path_cat and p["is_secret"]:
