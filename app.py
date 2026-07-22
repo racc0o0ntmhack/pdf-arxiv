@@ -1,13 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 import os
 import json
-import base64
-import requests
 
 app = Flask(__name__)
 app.secret_key = 'pdf_arxiv_secret_key'
 
-# Fayl yükləmə limitini artırırıq
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024 * 1024
 
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -145,6 +142,24 @@ def upload():
                 db["files"][filename] = {"path": "Ümumi"}
 
     save_db(db)
+    return redirect(url_for('index'))
+
+@app.route('/delete_file/<filename>', methods=['POST'])
+def delete_file(filename):
+    if not session.get('logged_in'):
+        return redirect(url_for('index'))
+    
+    # Faylı qovluqdan silirik
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(filepath):
+        os.remove(filepath)
+        
+    # Bazadan silirik
+    db = load_db()
+    if filename in db["files"]:
+        del db["files"][filename]
+        save_db(db)
+        
     return redirect(url_for('index'))
 
 @app.route('/add_folder', methods=['POST'])
