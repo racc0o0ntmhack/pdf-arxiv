@@ -1,11 +1,11 @@
 /* Daha sakit, göz yormayan pastel südü yaşıl tonlar */
 body {
-    background: linear-gradient(135deg, #d1fae5 0%, #416655 40%, #27986b83 75%, #99f6e4 100%);
+    background: linear-gradient(135deg, #d1fae5 0%, #022817 40%, #c2d02bfd 75%, #99f6e4 100%);
     background-size: 400% 400%;
     animation: softMintFlow 18s ease infinite alternate;
     
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #105b47;
+    color: #044742;
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -31,7 +31,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.6) !important;
     border-radius: 16px;
     box-shadow: 0 8px 24px rgba(4, 120, 87, 0.1);
-    color: #064e3b !important;
+    color: #0e3f32 !important;
 }
 
 .card h3, .card label, .card p, .card-title, .header-box h1 {
@@ -46,7 +46,7 @@ body {
 }
 
 .form-control::placeholder {
-    color: #047857;
+    color: #05402f;
     opacity: 0.6;
 }
 
