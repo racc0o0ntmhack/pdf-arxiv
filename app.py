@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 import os
 import json
+import base64
+import requests
 
 app = Flask(__name__)
 app.secret_key = 'pdf_arxiv_secret_key'
 
-# Fayl yükləmə limitini 2 GB edirik
+# Fayl yükləmə limitini artırırıq
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024 * 1024
 
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -30,7 +32,6 @@ def save_db(data):
     with open(DB_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-# Qovluqları yolları və gizlilik statusu ilə birlikdə oxuyan funksiya
 def get_all_paths(current_dict, parent_path=""):
     paths = []
     for key, sub_data in current_dict.items():
@@ -43,7 +44,6 @@ def get_all_paths(current_dict, parent_path=""):
             paths.extend(get_all_paths(sub_dict, full_path))
     return paths
 
-# İyerarxik lüğətdə qovluq tapmaq və ya əlavə etmək
 def add_folder_recursive(d, path_list, new_folder, is_secret):
     if not path_list:
         return
@@ -72,7 +72,6 @@ def index():
 
     all_paths_info = get_all_paths(folders)
    
-    # Əgər admin deyilsə, gizli qovluqları siyahıdan çıxarırıq
     if not is_logged_in:
         valid_paths = [p["path"] for p in all_paths_info if not p["is_secret"]]
     else:
@@ -88,7 +87,6 @@ def index():
                 f_info = files_db[filename]
                 f_path = f_info.get("path", "Ümumi")
                
-                # Faylın yerləşdiyi qovluq gizlidirsə və admin deyiliksə, göstərmirik
                 is_file_secret = False
                 for p in all_paths_info:
                     if p["path"] == f_path and p["is_secret"]:
@@ -135,11 +133,18 @@ def upload():
         return redirect(url_for('index'))
    
     pdf_files = request.files.getlist('pdf_files')
+    db = load_db()
+    
     for pdf_file in pdf_files:
         if pdf_file and pdf_file.filename:
             filename = pdf_file.filename
-            pdf_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            pdf_file.save(filepath)
+            
+            if filename not in db["files"]:
+                db["files"][filename] = {"path": "Ümumi"}
 
+    save_db(db)
     return redirect(url_for('index'))
 
 @app.route('/add_folder', methods=['POST'])
@@ -186,7 +191,6 @@ def download(filename):
     file_info = files_db.get(filename, {})
     file_path_cat = file_info.get("path", "Ümumi")
 
-    # Faylın gizli qovluqda olub- olmadığını yoxlayırıq
     is_secret = False
     for p in all_paths_info:
         if p["path"] == file_path_cat and p["is_secret"]:
