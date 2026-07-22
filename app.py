@@ -35,7 +35,7 @@ def get_all_paths(current_dict, parent_path=""):
         full_path = f"{parent_path} / {key}" if parent_path else key
         is_secret = sub_data.get("is_secret", False) if isinstance(sub_data, dict) else False
         paths.append({"path": full_path, "is_secret": is_secret})
-       
+        
         sub_dict = sub_data.get("sub", {}) if isinstance(sub_data, dict) else sub_data
         if isinstance(sub_dict, dict) and sub_dict:
             paths.extend(get_all_paths(sub_dict, full_path))
@@ -68,7 +68,7 @@ def index():
     files_db = db["files"]
 
     all_paths_info = get_all_paths(folders)
-   
+    
     if not is_logged_in:
         valid_paths = [p["path"] for p in all_paths_info if not p["is_secret"]]
     else:
@@ -80,16 +80,16 @@ def index():
             if filename.endswith('.pdf'):
                 if filename not in files_db:
                     files_db[filename] = {"path": "Ümumi"}
-               
+                
                 f_info = files_db[filename]
                 f_path = f_info.get("path", "Ümumi")
-               
+                
                 is_file_secret = False
                 for p in all_paths_info:
                     if p["path"] == f_path and p["is_secret"]:
                         is_file_secret = True
                         break
-               
+                
                 if is_file_secret and not is_logged_in:
                     continue
 
@@ -106,12 +106,12 @@ def index():
         files_list = [f for f in files_list if f['path'] == selected_cat or f['path'].startswith(selected_cat + " / ")]
 
     return render_template('index.html',
-                          files=files_list,
-                          folder_paths=valid_paths,
-                          all_paths_info=all_paths_info,
-                          is_logged_in=is_logged_in,
-                          selected_cat=selected_cat,
-                          search_query=search_query)
+                           files=files_list,
+                           folder_paths=valid_paths,
+                           all_paths_info=all_paths_info,
+                           is_logged_in=is_logged_in,
+                           selected_cat=selected_cat,
+                           search_query=search_query)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -128,7 +128,7 @@ def logout():
 def upload():
     if not session.get('logged_in'):
         return redirect(url_for('index'))
-   
+    
     pdf_files = request.files.getlist('pdf_files')
     db = load_db()
     
@@ -149,12 +149,10 @@ def delete_file(filename):
     if not session.get('logged_in'):
         return redirect(url_for('index'))
     
-    # Faylı qovluqdan silirik
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     if os.path.exists(filepath):
         os.remove(filepath)
         
-    # Bazadan silirik
     db = load_db()
     if filename in db["files"]:
         del db["files"][filename]
@@ -162,11 +160,33 @@ def delete_file(filename):
         
     return redirect(url_for('index'))
 
+@app.route('/delete_selected', methods=['POST'])
+def delete_selected():
+    if not session.get('logged_in'):
+        return redirect(url_for('index'))
+    
+    selected_files_json = request.form.get('selected_files')
+    if selected_files_json:
+        try:
+            filenames = json.loads(selected_files_json)
+            db = load_db()
+            for filename in filenames:
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+                if filename in db["files"]:
+                    del db["files"][filename]
+            save_db(db)
+        except:
+            pass
+        
+    return redirect(url_for('index'))
+
 @app.route('/add_folder', methods=['POST'])
 def add_folder():
     if not session.get('logged_in'):
         return redirect(url_for('index'))
-   
+    
     parent_path = request.form.get('parent_path')
     new_folder_name = request.form.get('new_folder_name').strip()
     is_secret = True if request.form.get('is_secret') == 'on' else False
@@ -187,7 +207,7 @@ def add_folder():
 def update_file(filename):
     if not session.get('logged_in'):
         return redirect(url_for('index'))
-   
+    
     new_path = request.form.get('file_path')
     db = load_db()
     if filename in db["files"]:
