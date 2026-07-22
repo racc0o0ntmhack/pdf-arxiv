@@ -1,0 +1,28 @@
+{
+    "folders": {
+        "Ümumi": {
+            "qeyd": {
+                "is_secret": true,
+                "sub": {}
+            }
+        },
+        "qeyd": {
+            "is_secret": true,
+            "sub": {}
+        }
+    },
+    "files": {
+        "kupdf.net_kim-korkar-linuxtan.pdf": {
+            "path": "qeyd"
+        },
+        "Linux Komut Satırı.pdf": {
+            "path": "Ümumi"
+        },
+        "Routing.pdf": {
+            "path": "Ümumi"
+        },
+        "vəəəəğğğğ.pdf": {
+            "path": "Ümumi"
+        }
+    }
+}
