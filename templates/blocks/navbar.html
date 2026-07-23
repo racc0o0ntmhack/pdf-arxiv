@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PDF Dünyası{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-light">
+    <!-- NAVBAR -->
+    {% include 'blocks/navbar.html' %}
+    
+    <!-- ƏSAS MƏZMUN -->
+    <div class="container py-3">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- FOOTER -->
+    {% include 'blocks/footer.html' %}
+    
+    <!-- LOGIN MODAL -->
+    {% include 'blocks/login_modal.html' %}
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
