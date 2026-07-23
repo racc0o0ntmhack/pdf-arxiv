@@ -1,0 +1,292 @@
+/* ========================================
+   HƏRƏKƏTLİ BALONCUKLU PEMBE FON
+   ======================================== */
+
+/* === FON ÜÇÜN ƏSAS RƏNGLƏR === */
+:root {
+    --pink-light: #ffe4e9;
+    --pink-mid: #ffb6c1;
+    --pink-dark: #ff69b4;
+    --pink-gradient-start: #fff5f7;
+    --pink-gradient-end: #ffe4ec;
+    --bubble-color-1: rgba(255, 182, 193, 0.3);
+    --bubble-color-2: rgba(255, 105, 180, 0.2);
+    --bubble-color-3: rgba(255, 20, 147, 0.15);
+}
+
+/* === BODY - PEMBE FON === */
+body {
+    background: linear-gradient(135deg, var(--pink-gradient-start) 0%, #ffd6e0 30%, #ffb6c1 60%, var(--pink-gradient-end) 100%);
+    background-size: 400% 400%;
+    animation: pinkGradientFlow 15s ease-in-out infinite alternate;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Gradient Animasiyası */
+@keyframes pinkGradientFlow {
+    0% { background-position: 0% 30%; }
+    25% { background-position: 50% 80%; }
+    50% { background-position: 100% 40%; }
+    75% { background-position: 30% 90%; }
+    100% { background-position: 70% 20%; }
+}
+
+/* === BALONCUKLAR ÜÇÜN KONTEYNER === */
+.bubbles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* === BALONCUKLAR === */
+.bubble {
+    position: absolute;
+    bottom: -100px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: bubbleRise linear infinite;
+    box-shadow: inset -10px -10px 30px rgba(255, 255, 255, 0.6),
+                inset 10px 10px 30px rgba(255, 105, 180, 0.1);
+}
+
+/* Baloncukların rəngləri */
+.bubble-1 {
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), var(--bubble-color-1));
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.bubble-2 {
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7), var(--bubble-color-2));
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.bubble-3 {
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6), var(--bubble-color-3));
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.bubble-4 {
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 182, 193, 0.4));
+    border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Baloncukların ölçüləri */
+.bubble-sm { width: 30px; height: 30px; }
+.bubble-md { width: 50px; height: 50px; }
+.bubble-lg { width: 80px; height: 80px; }
+.bubble-xl { width: 120px; height: 120px; }
+.bubble-xxl { width: 180px; height: 180px; }
+
+/* === BALONCUK ANİMASİYASI === */
+@keyframes bubbleRise {
+    0% {
+        transform: translateY(0) translateX(0) scale(0.5) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-50vh) translateX(30px) scale(1.1) rotate(180deg);
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(-110vh) translateX(-20px) scale(0.8) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Hər baloncuk üçün fərqli sürət və yan hərəkət */
+.bubble-1 { animation-duration: 8s; }
+.bubble-2 { animation-duration: 12s; }
+.bubble-3 { animation-duration: 10s; }
+.bubble-4 { animation-duration: 15s; }
+.bubble-5 { animation-duration: 9s; }
+.bubble-6 { animation-duration: 14s; }
+.bubble-7 { animation-duration: 11s; }
+.bubble-8 { animation-duration: 13s; }
+.bubble-9 { animation-duration: 7s; }
+.bubble-10 { animation-duration: 16s; }
+
+/* Baloncukların sol-sağ hərəkəti */
+.bubble-left { animation-name: bubbleRiseLeft; }
+.bubble-right { animation-name: bubbleRiseRight; }
+
+@keyframes bubbleRiseLeft {
+    0% {
+        transform: translateY(0) translateX(0) scale(0.5) rotate(0deg);
+        opacity: 0;
+    }
+    10% { opacity: 0.6; }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-50vh) translateX(-50px) scale(1.2) rotate(180deg);
+    }
+    90% { opacity: 0.6; }
+    100% {
+        transform: translateY(-110vh) translateX(-80px) scale(0.7) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes bubbleRiseRight {
+    0% {
+        transform: translateY(0) translateX(0) scale(0.5) rotate(0deg);
+        opacity: 0;
+    }
+    10% { opacity: 0.6; }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-50vh) translateX(50px) scale(1.3) rotate(180deg);
+    }
+    90% { opacity: 0.6; }
+    100% {
+        transform: translateY(-110vh) translateX(80px) scale(0.6) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* === BALONCUKLARIN GECİKMƏLƏRİ === */
+.delay-1 { animation-delay: 0s; }
+.delay-2 { animation-delay: 2s; }
+.delay-3 { animation-delay: 4s; }
+.delay-4 { animation-delay: 6s; }
+.delay-5 { animation-delay: 8s; }
+.delay-6 { animation-delay: 3s; }
+.delay-7 { animation-delay: 5s; }
+.delay-8 { animation-delay: 7s; }
+.delay-9 { animation-delay: 9s; }
+.delay-10 { animation-delay: 1s; }
+
+/* === FON ÜZƏRİNDƏ ƏLAVƏ ULDUZLAR === */
+.stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* === KONTEYNER - FONUN ÜSTÜNDƏ QALIR === */
+.container {
+    position: relative;
+    z-index: 1;
+}
+
+/* === ŞÜŞƏ EFFEKTLİ KOMPONENTLƏR (Pembe Uyumlu) === */
+.card, .glass {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(255, 105, 180, 0.15);
+}
+
+.card:hover {
+    box-shadow: 0 12px 48px rgba(255, 105, 180, 0.25);
+    transform: translateY(-4px);
+}
+
+/* === DÜYMƏLƏR (Pembe Tonlar) === */
+.btn-primary {
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #ff1493, #ff69b4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 105, 180, 0.4);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #ff6b9d, #ff4081);
+    border: none;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 64, 129, 0.4);
+}
+
+/* === NAVBAR (Pembe) === */
+.navbar {
+    background: rgba(255, 105, 180, 0.85) !important;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.navbar-brand {
+    color: white !important;
+}
+
+.navbar-brand:hover {
+    color: #ffe4e9 !important;
+}
+
+/* === ALERTLAR === */
+.alert-info {
+    background: rgba(255, 182, 193, 0.25) !important;
+    border-left: 4px solid #ff69b4;
+}
+
+/* === FORMLAR === */
+.form-control, .form-select {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 2px solid rgba(255, 105, 180, 0.3) !important;
+    color: #5c2e3e !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #ff69b4 !important;
+    box-shadow: 0 0 0 4px rgba(255, 105, 180, 0.15);
+}
+
+/* === KART YAZILARI === */
+.card-title, .card-text {
+    color: #5c2e3e !important;
+}
+
+/* === FOOTER === */
+footer {
+    background: rgba(255, 105, 180, 0.85) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* === MODAL === */
+.modal-content {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 105, 180, 0.3);
+}
