@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}PDF Oxu - {{ filename }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    .pdf-container {
+        height: 85vh;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    
+    .pdf-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: white;
+    }
+    
+    .pdf-toolbar {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .pdf-toolbar .btn {
+        border-radius: 10px;
+        padding: 8px 16px;
+    }
+    
+    .pdf-info {
+        color: white;
+        font-weight: 500;
+    }
+    
+    .pdf-info i {
+        margin-right: 8px;
+    }
+    
+    @media (max-width: 768px) {
+        .pdf-container {
+            height: 70vh;
+        }
+        
+        .pdf-toolbar {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Toolbar -->
+        <div class="pdf-toolbar d-flex justify-content-between align-items-center flex-wrap">
+            <div class="pdf-info">
+                <i class="fas fa-file-pdf text-danger"></i>
+                <span>{{ filename }}</span>
+            </div>
+            <div>
+                <a href="{{ url_for('download', filename=filename) }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-download me-1"></i>Yüklə
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i>Geri
+                </a>
+            </div>
+        </div>
+        
+        <!-- PDF Göstərici -->
+        <div class="pdf-container">
+            <iframe 
+                src="{{ url_for('static', filename='uploads/' + filename) }}#toolbar=1&navpanes=1&scrollbar=1"
+                allow="fullscreen"
+                loading="lazy"
+            ></iframe>
+        </div>
+        
+        <!-- PDF ilə bağlı məlumat -->
+        <div class="mt-3 text-white-50 small">
+            <i class="fas fa-info-circle me-1"></i>
+            PDF faylı brauzerinizdə göstərilir. Yükləmək üçün yuxarıdakı "Yüklə" düyməsindən istifadə edin.
+        </div>
+    </div>
+</div>
+{% endblock %}

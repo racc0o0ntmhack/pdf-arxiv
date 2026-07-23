@@ -1,0 +1,7 @@
+/* 1. Figma Tokenları və Əsas Stillər */
+@import "figma-tokens.css";
+@import "base.css";
+@import "components.css";
+@import "animations.css";
+
+/* 2. Şəxsi Stillər */
