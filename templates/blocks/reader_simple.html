@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}PDF Oxu - {{ filename }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>
+                <i class="fas fa-file-pdf text-danger me-2"></i>
+                {{ filename }}
+            </h4>
+            <div>
+                <a href="{{ url_for('download', filename=filename) }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-download me-1"></i>Yüklə
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i>Geri
+                </a>
+            </div>
+        </div>
+        
+        <div style="height: 85vh; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+            <iframe 
+                src="{{ url_for('static', filename='uploads/' + filename) }}"
+                style="width: 100%; height: 100%; border: none;"
+                allow="fullscreen"
+            ></iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}

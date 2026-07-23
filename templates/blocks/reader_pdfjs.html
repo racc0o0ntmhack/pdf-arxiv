@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}PDF Oxu - {{ filename }}{% endblock %}
+
+{% block extra_head %}
+<!-- PDF.js Kitabxanası -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+    #pdf-container {
+        background: #f5f5f5;
+        border-radius: 16px;
+        padding: 20px;
+        min-height: 600px;
+        max-height: 80vh;
+        overflow: auto;
+        position: relative;
+    }
+    
+    .pdf-page {
+        margin: 0 auto 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        border-radius: 4px;
+        background: white;
+        max-width: 100%;
+    }
+    
+    .pdf-page canvas {
+        display: block;
+        width: 100% !important;
+        height: auto !important;
+    }
+    
+    .pdf-toolbar {
+        background: white;
+        border-radius: 12px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .pdf-controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    #loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #666;
+    }
+    
+    #loader i {
+        font-size: 48px;
+        color: #ff69b4;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .error-message {
+        color: #dc3545;
+        text-align: center;
+        padding: 40px;
+    }
+    
+    .error-message i {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Toolbar -->
+        <div class="pdf-toolbar">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-file-pdf text-danger me-2" style="font-size: 1.2rem;"></i>
+                <span class="fw-bold text-truncate" style="max-width: 200px;">{{ filename }}</span>
+            </div>
+            
+            <div class="pdf-controls">
+                <button onclick="prevPage()" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="page-info" id="pageInfo">1 / 1</span>
+                <button onclick="nextPage()" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <a href="{{ url_for('download', filename=filename) }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-download me-1"></i>Yüklə
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i>Geri
+                </a>
+            </div>
+        </div>
+        
+        <!-- PDF Göstərici -->
+        <div id="pdf-container">
+            <div id="loader">
+                <i class="fas fa-spinner"></i>
+                <p class="mt-2">PDF yüklənir...</p>
+            </div>
+            <div id="pdfPages"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// PDF.js işçisini təyin et
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let pdfDoc = null;
+let currentPage = 1;
+let totalPages = 0;
+const container = document.getElementById('pdf-container');
+const pagesDiv = document.getElementById('pdfPages');
+const loader = document.getElementById('loader');
+const pageInfo = document.getElementById('pageInfo');
+
+// PDF URL - BURAYA DİQQƏT!
+const pdfUrl = "{{ url_for('static', filename='uploads/' + filename, _external=True) }}";
+
+console.log('📄 PDF URL:', pdfUrl);
+
+// PDF yüklə
+function loadPDF() {
+    loader.style.display = 'block';
+    pagesDiv.innerHTML = '';
+    
+    pdfjsLib.getDocument(pdfUrl).promise
+        .then(function(pdf) {
+            pdfDoc = pdf;
+            totalPages = pdf.numPages;
+            loader.style.display = 'none';
+            pageInfo.textContent = `1 / ${totalPages}`;
+            renderPage(1);
+            console.log('✅ PDF yükləndi! Səhifələr:', totalPages);
+        })
+        .catch(function(error) {
+            console.error('❌ PDF yükləmə xətası:', error);
+            loader.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                    <h5>PDF yüklənə bilmədi!</h5>
+                    <p class="text-muted">${error.message}</p>
+                    <div class="mt-3">
+                        <a href="${pdfUrl}" target="_blank" class="btn btn-primary btn-sm">
+                            <i class="fas fa-external-link-alt me-1"></i>Birbaşa aç
+                        </a>
+                        <a href="{{ url_for('download', filename=filename) }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-download me-1"></i>Yüklə
+                        </a>
+                    </div>
+                </div>
+            `;
+        });
+}
+
+// Səhifəni göstər
+function renderPage(pageNum) {
+    if (!pdfDoc) return;
+    
+    pdfDoc.getPage(pageNum).then(function(page) {
+        const scale = 1.2;
+        const viewport = page.getViewport({ scale: scale });
+        
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        canvas.className = 'pdf-page';
+        
+        const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+        };
+        
+        pagesDiv.innerHTML = '';
+        pagesDiv.appendChild(canvas);
+        
+        page.render(renderContext).promise.then(function() {
+            pageInfo.textContent = `${pageNum} / ${totalPages}`;
+        });
+    });
+}
+
+function prevPage() {
+    if (currentPage <= 1) return;
+    currentPage--;
+    renderPage(currentPage);
+}
+
+function nextPage() {
+    if (currentPage >= totalPages) return;
+    currentPage++;
+    renderPage(currentPage);
+}
+
+// Səhifə yükləndikdə
+document.addEventListener('DOMContentLoaded', function() {
+    loadPDF();
+});
+
+// Klaviatura
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        nextPage();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        prevPage();
+    }
+});
+</script>
+{% endblock %}
