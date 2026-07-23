@@ -216,6 +216,30 @@ def update_file(filename):
 
     return redirect(url_for('index'))
 
+@app.route('/read/<path:filename>')
+def read_pdf(filename):
+    db = load_db()
+    files_db = db.get("files", {})
+    all_paths_info = get_all_paths(db.get("folders", {}))
+    is_logged_in = session.get('logged_in', False)
+
+    file_info = files_db.get(filename, {})
+    file_path_cat = file_info.get("path", "Ümumi")
+
+    is_secret = False
+    for p in all_paths_info:
+        if p["path"] == file_path_cat and p["is_secret"]:
+            is_secret = True
+            break
+
+    if is_secret and not is_logged_in:
+        return "Bu fayl gizlidir və oxuna bilməz!", 403
+
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(file_path):
+        return render_template('reader.html', filename=filename)
+    return "Fayl tapılmadı!", 404
+    
 @app.route('/download/<path:filename>')
 def download(filename):
     db = load_db()
@@ -242,27 +266,3 @@ def download(filename):
 
 if __name__ == '__main__':
     app.run(debug=True)
-    @app.route('/read/<path:filename>')
-def read_pdf(filename):
-    db = load_db()
-    files_db = db.get("files", {})
-    all_paths_info = get_all_paths(db.get("folders", {}))
-    is_logged_in = session.get('logged_in', False)
-
-    file_info = files_db.get(filename, {})
-    file_path_cat = file_info.get("path", "Ümumi")
-
-    is_secret = False
-    for p in all_paths_info:
-        if p["path"] == file_path_cat and p["is_secret"]:
-            is_secret = True
-            break
-
-    if is_secret and not is_logged_in:
-        return "Bu fayl gizlidir və oxuna bilməz!", 403
-
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    if os.path.exists(file_path):
-        # Burada as_attachment=False edirik ki, fayl yüklənməsin, brauzerdə açlsın
-        return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=False)
-    return "Fayl tapılmadı!", 404
